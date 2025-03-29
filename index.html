@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">   
+<head>
+    <meta charset="UTF-8">  
+    <title>yoke</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css"> 
+</head>
+<body>
+    <!-- Title Bar with Logo and Name -->
+    <div class="title-bar">
+        <img src="drago.png" class="logo" alt="Logo">
+        <h1 class="site-name">Internet Sales</h1>
+    </div>
+
+    <!-- Animation Section -->
+    <div class="header finisher-header" style="width: 100%; height: 1500px;">
+    </div>
+
+    <!-- Registration Form Area -->
+    <div class="form-area" id="formArea">
+        <div class="wrapper">
+            <h2>Customer Registration</h2>       
+            <form id="registerForm">             
+                <div class="box">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <i class="fa fa-user"></i>
+                </div>
+                <div class="box">
+                    <input type="text" id="email" placeholder="Email Address" required>
+                    <i class="fa fa-envelope"></i>
+                </div>
+                <div class="box">
+                    <input type="password" id="password" placeholder="Enter Password" required>
+                    <i class="fa fa-lock"></i>
+                </div>
+                <div class="box">
+                    <input type="password" id="rePassword" placeholder="Re-Enter Password" required>
+                    <i class="fa fa-lock"></i>
+                </div>
+                <button type="submit">Submit</button>
+                <p>Existing User? <a class="pass" href="login.html">Login</a></p>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Animation Code -->
+    <script src="finisher-header.es5.min (1).js" type="text/javascript"></script>
+    <script type="text/javascript">
+        new FinisherHeader({
+            "count": 100,
+            "size": {
+                "min": 1,
+                "max": 6,
+                "pulse": 0
+            },
+            "speed": {
+                "x": {
+                    "min": 0,
+                    "max": 0.4
+                },
+                "y": {
+                    "min": 0,
+                    "max": 0.6
+                }
+            },
+            "colors": {
+                "background": "#201e30",
+                "particles": [
+                    "#fbfcca",
+                    "#d7f3fe",
+                    "#ffd0a7"
+                ]
+            },
+            "blending": "overlay",
+            "opacity": {
+                "center": 1,
+                "edge": 0
+            },
+            "skew": -0.8,
+            "shapes": [
+                "s"
+            ]
+        });
+    </script>
+
+    <!-- Firebase SDKs and Integration -->
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyByiglUVA6K17O6-x27B9ARgcItDQPlMIQ",
+            authDomain: "yoke-a1faa.firebaseapp.com",
+            projectId: "yoke-a1faa",
+            storageBucket: "yoke-a1faa.firebasestorage.app",
+            messagingSenderId: "23800598155",
+            appId: "1:23800598155:web:6faf4a6667a521933c4e8e"
+        };
+
+        // Firebase initialization code here 
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        document.getElementById("registerForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            // getting data input from the user 
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const rePassword = document.getElementById("rePassword").value;
+
+            // checking for password match
+            if (password !== rePassword) {
+                alert("Passwords do not match. Please re-enter the correct password.");
+                return false;
+            }
+
+            try {
+                // Create New User in Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Save User Data to Firebase Database
+                await set(ref(database, 'users/' + user.uid), {
+                    username: username,
+                    email: email
+                });
+
+                alert("Account created successfully! Redirecting to login page...");
+                
+                // Hide Form and Redirect After Successful Registration
+                document.getElementById("formArea").innerHTML = `
+                    <div class="wrapper">
+                        <h2>Registration Successful!</h2>
+                        <p><a href="login.html">Click here to Login</a></p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error("Error: ", error);
+                alert("Error: " + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
